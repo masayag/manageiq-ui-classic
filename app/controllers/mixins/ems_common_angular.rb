@@ -323,6 +323,7 @@ module Mixins
         kubevirt_security_protocol ||= default_security_protocol
         kubevirt_tls_ca_certs = @ems.connection_configurations.kubevirt.endpoint.certificate_authority
         kubevirt_tls_verify = @ems.connection_configurations.kubevirt.endpoint.verify_ssl
+        @ignore_default_auth_status = @ems.kind_of?(ManageIQ::Providers::Kubevirt::InfraManager)
       end
 
       if @ems.connection_configurations.default.try(:endpoint)
@@ -858,7 +859,7 @@ module Mixins
     end
 
     def default_auth_status
-      @ems.authentication_status_ok? unless @ems.kind_of?(ManageIQ::Providers::Google::CloudManager)
+      (@ignore_default_auth_status || @ems.authentication_status_ok?) unless @ems.kind_of?(ManageIQ::Providers::Google::CloudManager)
     end
   end
 end
